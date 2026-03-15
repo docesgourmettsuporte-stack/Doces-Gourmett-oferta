@@ -67,18 +67,26 @@ const PurchaseNotification = () => {
   ];
 
   useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+    let hideTimeoutId: ReturnType<typeof setTimeout>;
+
     const showNext = () => {
       setCurrentName(names[Math.floor(Math.random() * names.length)]);
       setVisible(true);
-      setTimeout(() => setVisible(false), 4000);
       
-      const nextDelay = Math.floor(Math.random() * (15000 - 8000) + 8000);
-      setTimeout(showNext, nextDelay);
+      hideTimeoutId = setTimeout(() => {
+        setVisible(false);
+        const nextDelay = Math.floor(Math.random() * (15000 - 8000) + 8000);
+        timeoutId = setTimeout(showNext, nextDelay);
+      }, 4000);
     };
 
-    const initialDelay = 4000;
-    const timeout = setTimeout(showNext, initialDelay);
-    return () => clearTimeout(timeout);
+    timeoutId = setTimeout(showNext, 4000);
+    
+    return () => {
+      clearTimeout(timeoutId);
+      clearTimeout(hideTimeoutId);
+    };
   }, []);
 
   return (
@@ -138,17 +146,26 @@ const FAQItem = ({ question, answer }: { question: string, answer: string }) => 
 // --- Main App ---
 
 export default function App() {
-  const handleRedirect = (e: React.MouseEvent, baseUrl: string) => {
+  const handleRedirect = (e: React.MouseEvent<HTMLAnchorElement>, baseUrl: string) => {
     e.preventDefault();
-    const search = window.location.search;
-    if (!search) {
-      window.location.href = baseUrl;
-      return;
-    }
+    console.log("Iniciando redirecionamento para:", baseUrl);
     
-    const separator = baseUrl.includes('?') ? '&' : '?';
-    const cleanSearch = search.startsWith('?') ? search.substring(1) : search;
-    window.location.href = `${baseUrl}${separator}${cleanSearch}`;
+    try {
+      const search = window.location.search;
+      let finalUrl = baseUrl;
+      
+      if (search) {
+        const separator = baseUrl.includes('?') ? '&' : '?';
+        const cleanSearch = search.startsWith('?') ? search.substring(1) : search;
+        finalUrl = `${baseUrl}${separator}${cleanSearch}`;
+      }
+      
+      console.log("URL final com parâmetros:", finalUrl);
+      window.location.href = finalUrl;
+    } catch (error) {
+      console.error("Erro no redirecionamento:", error);
+      window.location.href = baseUrl;
+    }
   };
 
   return (
