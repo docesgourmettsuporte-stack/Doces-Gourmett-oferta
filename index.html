@@ -176,6 +176,7 @@
             <a 
               href="https://pay.lowify.com.br/checkout?product_id=I7k7FR" 
               data-redirect
+              @click.prevent="showUpsell = true"
               class="block w-full bg-zinc-800 hover:bg-zinc-900 text-white font-bold py-4 rounded-xl text-lg transition-all"
             >
               Plano Básico
@@ -260,9 +261,68 @@
       </div>
     </footer>
 
+    <!-- Upsell Modal -->
+    <div 
+      x-show="showUpsell" 
+      class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md"
+      x-transition:enter="transition ease-out duration-300"
+      x-transition:enter-start="opacity-0"
+      x-transition:enter-end="opacity-100"
+      x-transition:leave="transition ease-in duration-200"
+      x-transition:leave-start="opacity-100"
+      x-transition:leave-end="opacity-0"
+      x-cloak
+    >
+      <div 
+        @click.away="showUpsell = false"
+        class="bg-white rounded-2xl max-w-sm w-full overflow-hidden shadow-[0_0_50px_rgba(220,38,38,0.3)] border-2 border-red-600 transform transition-all"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0 scale-90 translate-y-8"
+        x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+      >
+        <div class="bg-red-600 py-2 px-4 text-center">
+          <p class="text-white font-black text-sm uppercase tracking-tighter italic animate-pulse">OFERTA ÚNICA E EXCLUSIVA!</p>
+        </div>
+        
+        <div class="p-5 text-center">
+          <h4 class="text-xl font-black text-zinc-900 mb-1">UPGRADE PREMIUM LIBERADO!</h4>
+          <p class="text-xs text-zinc-500 mb-4 leading-tight">
+            Leve <span class="font-bold text-red-600">TODOS OS BÔNUS</span> + Acesso Vitalício por quase o mesmo preço do básico!
+          </p>
+
+          <div class="bg-red-50 rounded-xl p-4 mb-5 border border-red-200">
+            <p class="text-zinc-400 line-through text-[10px] mb-0">De R$ 49,99</p>
+            <div class="flex items-center justify-center gap-2">
+              <span class="text-zinc-600 text-xs font-bold">POR APENAS:</span>
+              <span class="text-4xl font-black text-red-600 font-baloo">R$ 5,99</span>
+            </div>
+            <p class="text-[9px] text-red-500 font-bold uppercase mt-1">Válido apenas para este clique!</p>
+          </div>
+
+          <div class="space-y-3">
+            <a 
+              href="https://pay.lowify.com.br/go.php?offer=0cu2fws" 
+              data-redirect
+              class="block w-full bg-green-600 hover:bg-green-500 text-white font-black py-4 rounded-xl text-lg transition-all transform hover:scale-105 shadow-lg shadow-green-900/40 uppercase leading-none"
+            >
+              SIM! QUERO O PREMIUM
+            </a>
+            
+            <button 
+              @click="window.location.href = 'https://pay.lowify.com.br/checkout?product_id=I7k7FR' + (window.location.search || '')"
+              class="text-zinc-400 text-[10px] font-bold hover:text-zinc-600 transition-colors uppercase tracking-widest"
+            >
+              Não, quero continuar com o básico
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script>
       function appData() {
         return {
+          showUpsell: false,
           timer: {
             timeLeft: 600,
             minutes: '10',
