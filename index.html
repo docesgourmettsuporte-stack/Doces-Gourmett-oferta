@@ -150,8 +150,7 @@
 
           <!-- Basic Card -->
           <div class="bg-white text-zinc-900 rounded-3xl p-8 shadow-xl border border-zinc-200 self-start lg:mt-12">
-            <h2 class="text-2xl font-black font-baloo mb-2">BÁSICO</h2>
-            <p class="text-zinc-500 font-bold text-xs mb-6 uppercase tracking-wider">Acesso Vitalício</p>
+            <h2 class="text-2xl font-black font-baloo mb-6">BÁSICO</h2>
 
             <ul class="text-left space-y-4 mb-8">
               <li class="flex items-start gap-3 text-zinc-600 text-sm md:text-base italic">
@@ -173,14 +172,13 @@
               <p class="text-4xl font-black text-green-700 font-baloo">R$ 2,99</p>
             </div>
 
-            <a 
-              href="https://pay.lowify.com.br/checkout?product_id=I7k7FR" 
-              data-redirect
-              @click.prevent="showUpsell = true"
-              class="block w-full bg-zinc-800 hover:bg-zinc-900 text-white font-bold py-4 rounded-xl text-lg transition-all"
+            <button 
+              type="button"
+              @click.stop.prevent="showUpsell = true"
+              class="block w-full bg-zinc-800 hover:bg-zinc-900 text-white font-bold py-4 rounded-xl text-lg transition-all cursor-pointer"
             >
               Plano Básico
-            </a>
+            </button>
           </div>
         </div>
       </div>
