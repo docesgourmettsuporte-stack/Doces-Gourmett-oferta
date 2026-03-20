@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Brigadeiros Sem Fogo Premium</title>
+    <title>Mestre dos Brigadeiros Sem Fogo - Método Premium</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,17 +16,36 @@
       tailwind.config = {
         theme: {
           extend: {
+            colors: {
+              chocolate: {
+                50: '#fdf8f6',
+                100: '#f2e8e5',
+                200: '#eaddd7',
+                300: '#e0cec7',
+                400: '#d2bab0',
+                500: '#bfa094',
+                600: '#a18072',
+                700: '#846358',
+                800: '#432818', // Deep Chocolate
+                900: '#331a0d',
+              },
+              gold: {
+                500: '#D4AF37',
+                600: '#C5A028',
+              }
+            },
             fontFamily: {
               baloo: ['"Baloo 2"', 'cursive'],
               montserrat: ['Montserrat', 'sans-serif'],
             },
             animation: {
-              'pulse-subtle': 'pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'float': 'float 3s ease-in-out infinite',
             },
             keyframes: {
-              'pulse-subtle': {
-                '0%, 100%': { opacity: 1, transform: 'scale(1)' },
-                '50%': { opacity: 0.9, transform: 'scale(1.02)' },
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-10px)' },
               }
             }
           }
@@ -44,225 +63,278 @@
       [x-cloak] { display: none !important; }
       body { font-family: 'Montserrat', sans-serif; }
       .font-baloo { font-family: 'Baloo 2', cursive; }
+      .gradient-text {
+        background: linear-gradient(to right, #D4AF37, #fde68a, #D4AF37);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .glass {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
     </style>
   </head>
-  <body class="min-h-screen flex flex-col bg-white overflow-x-hidden" x-data="appData()">
+  <body class="min-h-screen flex flex-col bg-chocolate-50 overflow-x-hidden" x-data="appData()">
     
-    <!-- Purchase Notification -->
+    <!-- Sales Notification (Minimal) -->
     <div 
-      x-show="notification.visible" 
+      x-show="notification.visible"
       x-transition:enter="transition ease-out duration-300"
-      x-transition:enter-start="opacity-0 -translate-x-10"
-      x-transition:enter-end="opacity-100 translate-x-0"
+      x-transition:enter-start="opacity-0 translate-y-4"
+      x-transition:enter-end="opacity-100 translate-y-0"
       x-transition:leave="transition ease-in duration-300"
-      x-transition:leave-start="opacity-100 translate-x-0"
-      x-transition:leave-end="opacity-0 -translate-x-10"
-      class="fixed bottom-4 left-4 z-50 bg-white shadow-2xl rounded-xl p-4 border border-zinc-100 flex items-center gap-3 max-w-[280px]"
-      x-cloak
+      class="fixed bottom-4 left-4 z-50 bg-chocolate-900 text-white px-4 py-2 rounded-full text-[10px] font-bold shadow-2xl flex items-center gap-2 border border-white/10"
     >
-      <div class="bg-green-100 p-2 rounded-full">
-        <i data-lucide="shopping-bag" class="w-5 h-5 text-green-600"></i>
-      </div>
-      <div>
-        <p class="text-sm text-zinc-600">
-          <span class="font-bold text-zinc-900" x-text="notification.currentName"></span> acabou de comprar o <span class="text-green-600 font-semibold">Pacote Premium</span>
-        </p>
-        <p class="text-[10px] text-zinc-400">há poucos segundos</p>
-      </div>
+      <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+      <span x-text="notification.message"></span>
     </div>
 
-    <!-- Announcement Bar -->
-    <div class="bg-green-600 text-white py-3 px-4 text-center font-semibold text-sm md:text-base">
-      <p class="flex items-center justify-center gap-2">
-        <i data-lucide="star" class="w-4 h-4 fill-white"></i>
-        PARABÉNS! VOCÊ ACABA DE GANHAR UM SUPER DESCONTO NO PACOTE PREMIUM.
-        <i data-lucide="star" class="w-4 h-4 fill-white"></i>
-      </p>
+    <!-- Sticky Top Bar -->
+    <div class="sticky top-0 z-[100] bg-chocolate-800 text-white py-2 px-4 shadow-lg">
+      <div class="max-w-6xl mx-auto flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+          <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest">Oferta Expira em:</span>
+        </div>
+        <div class="flex gap-2 font-baloo font-bold text-amber-400 text-sm md:text-lg">
+          <span x-text="timer.minutes">00</span>:<span x-text="timer.seconds">00</span>
+        </div>
+        <div class="hidden md:block">
+          <span class="text-[10px] font-bold uppercase tracking-tighter bg-red-600 px-2 py-1 rounded">Últimas 5 Unidades</span>
+        </div>
+      </div>
     </div>
 
     <!-- Hero Section -->
-    <section class="relative bg-gradient-to-b from-zinc-900 to-red-950 text-white pt-16 pb-32 px-4 overflow-hidden">
-      <div class="max-w-4xl mx-auto text-center relative z-10">
-        <h1 class="text-4xl md:text-6xl font-black font-baloo text-amber-400 mb-6 leading-tight">
-          ATENÇÃO:
-        </h1>
-        
-        <!-- Countdown Timer -->
-        <div class="mb-8 flex gap-4 justify-center items-center font-baloo">
-          <div class="bg-amber-500 text-white px-4 py-2 rounded-lg text-center min-w-[80px]">
-            <span class="text-3xl font-bold block leading-none" x-text="timer.minutes">00</span>
-            <span class="text-xs uppercase">Minutos</span>
+    <header class="relative bg-chocolate-900 text-white pt-16 pb-16 px-4 overflow-hidden">
+      <!-- Background Pattern -->
+      <div class="absolute inset-0 opacity-10 pointer-events-none">
+        <div class="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-chocolate-600 via-transparent to-transparent"></div>
+      </div>
+
+      <div class="max-w-6xl mx-auto relative z-10">
+        <div class="text-center">
+          <div class="inline-flex items-center gap-2 bg-red-600/20 text-red-500 border border-red-600/30 px-6 py-2 rounded-full text-xs md:text-sm font-black uppercase tracking-[0.2em] mb-8 animate-pulse">
+            <i data-lucide="alert-circle" class="w-4 h-4"></i>
+            Oportunidade Única: Só via PIX
           </div>
-          <span class="text-3xl font-bold text-amber-500">:</span>
-          <div class="bg-amber-500 text-white px-4 py-2 rounded-lg text-center min-w-[80px]">
-            <span class="text-3xl font-bold block leading-none" x-text="timer.seconds">00</span>
-            <span class="text-xs uppercase">Segundos</span>
-          </div>
-        </div>
-
-        <p class="text-lg md:text-xl font-medium text-zinc-300 mb-12">
-          Em alguns instantes esse desconto vai acabar. <br class="hidden md:block" />
-          Restam apenas <span class="text-red-500 font-bold">3 VAGAS</span> com desconto especial.
-        </p>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mt-12">
-          <!-- Premium Card -->
-          <div class="bg-zinc-900/50 backdrop-blur-sm border-2 border-amber-500 rounded-3xl p-8 shadow-2xl relative overflow-hidden group">
-            <div class="absolute top-0 right-0 bg-amber-500 text-zinc-900 font-bold px-6 py-1 rounded-bl-2xl uppercase text-xs tracking-widest">
-              Mais Vendido
-            </div>
-            
-            <h2 class="text-3xl font-black font-baloo mb-2 text-white">PREMIUM</h2>
-            <p class="text-green-400 font-bold text-sm mb-6 uppercase tracking-wider">Acesso Vitalício + Bônus</p>
-            
-            <ul class="text-left space-y-4 mb-8">
-              <template x-for="item in premiumFeatures">
-                <li class="flex items-start gap-3 text-zinc-200 text-sm md:text-base italic">
-                  <i data-lucide="check" class="w-5 h-5 text-amber-500 shrink-0"></i>
-                  <span x-text="item"></span>
-                </li>
-              </template>
-            </ul>
-
-            <div class="space-y-2 mb-8">
-              <p class="text-zinc-400 line-through text-lg">De R$ 49,99</p>
-              <p class="text-red-500 line-through text-xl font-bold">Por R$ 14,99</p>
-              <div class="bg-green-600/20 py-4 rounded-2xl border border-green-500/30">
-                <p class="text-zinc-300 text-sm mb-1">Somente hoje por:</p>
-                <p class="text-5xl font-black text-white font-baloo">R$ 9,99</p>
-                <p class="text-zinc-300 font-bold mt-1">Pagamento Único</p>
-              </div>
-            </div>
-
+          <h1 class="text-5xl md:text-8xl font-black font-baloo leading-[0.9] mb-8 tracking-tighter">
+            LUCRO RÁPIDO <br />
+            <span class="text-red-600">SEM FOGÃO!</span>
+          </h1>
+          <p class="text-xl md:text-3xl text-chocolate-200 max-w-4xl mx-auto font-medium leading-tight mb-12">
+            Aprenda o método que está fazendo mulheres lucrarem <span class="text-amber-400 font-black underline">R$ 150,00 por dia</span> com brigadeiros gourmet feitos em minutos.
+          </p>
+          
+          <!-- Aggressive CTA Button -->
+          <div class="flex flex-col items-center gap-4">
             <a 
-              href="https://pay.lowify.com.br/go.php?offer=4g3sw2u" 
-              data-redirect
-              class="block w-full bg-green-600 hover:bg-green-500 text-white font-black py-5 rounded-2xl text-xl transition-all transform hover:scale-105 shadow-lg shadow-green-900/20 uppercase animate-pulse-subtle"
+              href="#oferta" 
+              class="bg-green-600 hover:bg-green-500 text-white px-12 py-6 rounded-2xl text-2xl md:text-4xl font-black font-baloo shadow-[0_20px_50px_rgba(22,163,74,0.4)] transition-all transform hover:scale-105 active:scale-95 animate-pulse-fast uppercase tracking-tighter"
             >
-              Garantir Minha Vaga!
+              GARANTIR MINHA VAGA (PIX)
             </a>
-            
-            <div class="mt-4 flex items-center justify-center gap-2 text-zinc-400 text-xs">
-              <i data-lucide="shield-check" class="w-4 h-4"></i>
-              Pagamento 100% Seguro
+            <div class="flex items-center gap-4 text-chocolate-400 text-xs font-bold uppercase tracking-widest">
+              <span class="flex items-center gap-1"><i data-lucide="check" class="w-4 h-4"></i> Acesso Imediato</span>
+              <span class="flex items-center gap-1"><i data-lucide="zap" class="w-4 h-4"></i> Liberação Instantânea</span>
             </div>
-          </div>
-
-          <!-- Basic Card -->
-          <div class="bg-white text-zinc-900 rounded-3xl p-8 shadow-xl border border-zinc-200 self-start lg:mt-12">
-            <h2 class="text-2xl font-black font-baloo mb-6">BÁSICO</h2>
-
-            <ul class="text-left space-y-4 mb-8">
-              <li class="flex items-start gap-3 text-zinc-600 text-sm md:text-base italic">
-                <i data-lucide="check" class="w-5 h-5 text-green-500 shrink-0"></i>
-                <span>E-book: 50 receitas de brigadeiro sem fogo</span>
-              </li>
-              <li class="flex items-start gap-3 text-zinc-300 text-sm md:text-base italic line-through">
-                <i data-lucide="check" class="w-5 h-5 text-zinc-200 shrink-0"></i>
-                <span>Bônus Especiais</span>
-              </li>
-              <li class="flex items-start gap-3 text-zinc-300 text-sm md:text-base italic line-through">
-                <i data-lucide="check" class="w-5 h-5 text-zinc-200 shrink-0"></i>
-                <span>Atualizações gratuitas</span>
-              </li>
-            </ul>
-
-            <div class="mb-8">
-              <p class="text-zinc-400 text-sm mb-1">Investimento único de:</p>
-              <p class="text-4xl font-black text-green-700 font-baloo">R$ 2,99</p>
-            </div>
-
-            <button 
-              type="button"
-              @click.stop.prevent="showUpsell = true"
-              class="block w-full bg-zinc-800 hover:bg-zinc-900 text-white font-bold py-4 rounded-xl text-lg transition-all cursor-pointer"
-            >
-              Plano Básico
-            </button>
           </div>
         </div>
       </div>
+    </header>
 
-      <!-- Decorative elements -->
-      <div class="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
-        <div class="absolute -top-24 -left-24 w-96 h-96 bg-red-600/10 rounded-full blur-3xl"></div>
-        <div class="absolute top-1/2 -right-24 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl"></div>
+    <!-- Comparison Section (Compact) -->
+    <section class="py-16 px-4 bg-chocolate-50">
+      <div class="max-w-3xl mx-auto">
+        <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-chocolate-100">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-chocolate-900 text-white">
+                <th class="py-4 px-4 text-sm font-black uppercase italic">O que você leva?</th>
+                <th class="py-4 px-4 text-center text-sm font-black uppercase italic">Básico</th>
+                <th class="py-4 px-4 text-center text-sm font-black uppercase italic bg-red-600">Premium</th>
+              </tr>
+            </thead>
+            <tbody class="text-xs md:text-sm font-bold">
+              <tr class="border-b border-chocolate-50">
+                <td class="py-4 px-4 text-chocolate-900">50 Receitas Sem Fogo</td>
+                <td class="py-4 px-4 text-center text-green-600"><i data-lucide="check" class="w-4 h-4 mx-auto"></i></td>
+                <td class="py-4 px-4 text-center text-green-600 bg-red-50"><i data-lucide="check" class="w-4 h-4 mx-auto"></i></td>
+              </tr>
+              <tr class="border-b border-chocolate-50">
+                <td class="py-4 px-4 text-chocolate-900">Curso Geladinhos Gourmet</td>
+                <td class="py-4 px-4 text-center text-red-500"><i data-lucide="x" class="w-4 h-4 mx-auto"></i></td>
+                <td class="py-4 px-4 text-center text-green-600 bg-red-50"><i data-lucide="check" class="w-4 h-4 mx-auto"></i></td>
+              </tr>
+              <tr class="border-b border-chocolate-50">
+                <td class="py-4 px-4 text-chocolate-900">70 Brigadeiros Gourmet</td>
+                <td class="py-4 px-4 text-center text-red-500"><i data-lucide="x" class="w-4 h-4 mx-auto"></i></td>
+                <td class="py-4 px-4 text-center text-green-600 bg-red-50"><i data-lucide="check" class="w-4 h-4 mx-auto"></i></td>
+              </tr>
+              <tr class="border-b border-chocolate-50">
+                <td class="py-4 px-4 text-chocolate-900">Suporte VIP WhatsApp</td>
+                <td class="py-4 px-4 text-center text-red-500"><i data-lucide="x" class="w-4 h-4 mx-auto"></i></td>
+                <td class="py-4 px-4 text-center text-green-600 bg-red-50"><i data-lucide="check" class="w-4 h-4 mx-auto"></i></td>
+              </tr>
+              <tr>
+                <td class="py-4 px-4 text-chocolate-900">Acesso Vitalício</td>
+                <td class="py-4 px-4 text-center text-red-500"><i data-lucide="x" class="w-4 h-4 mx-auto"></i></td>
+                <td class="py-4 px-4 text-center text-green-600 bg-red-50"><i data-lucide="check" class="w-4 h-4 mx-auto"></i></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing Section (Bento Style) -->
+    <section id="oferta" class="py-24 px-4 bg-chocolate-900 text-white relative overflow-hidden">
+      <div class="max-w-6xl mx-auto relative z-10">
+        <div class="text-center mb-16">
+          <h2 class="text-4xl md:text-7xl font-black font-baloo mb-6 uppercase italic tracking-tighter">Sua Chance <span class="text-amber-400">Final</span></h2>
+          <p class="text-chocolate-200 text-lg md:text-2xl font-medium">O preço vai subir assim que o cronômetro chegar a zero.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+          
+          <!-- Premium Plan (Aggressive) -->
+          <div class="lg:col-span-8 bg-white rounded-[2.5rem] p-1 text-chocolate-900 shadow-[0_0_100px_rgba(212,175,55,0.3)] relative group border-4 border-amber-500">
+            <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-red-600 text-white font-black px-10 py-3 rounded-full text-sm md:text-base uppercase tracking-[0.2em] shadow-2xl z-20 animate-bounce">
+              OFERTA MAIS LUCRATIVA!
+            </div>
+            
+            <div class="p-10 h-full flex flex-col md:flex-row gap-12">
+              <div class="flex-grow">
+                <h3 class="text-5xl font-black font-baloo mb-4 tracking-tighter">Mestre Premium</h3>
+                <p class="text-zinc-500 font-bold mb-8 italic text-lg">Tudo o que você precisa para faturar R$ 3.000,00/mês.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8 mb-8">
+                  <template x-for="feature in premiumFeatures">
+                    <div class="flex items-center gap-3 text-base font-bold text-chocolate-800">
+                      <div class="bg-green-100 p-1 rounded-full">
+                        <i data-lucide="check" class="w-5 h-5 text-green-600"></i>
+                      </div>
+                      <span x-text="feature"></span>
+                    </div>
+                  </template>
+                </div>
+              </div>
+
+              <div class="md:w-80 shrink-0 flex flex-col justify-center bg-chocolate-50 rounded-3xl p-8 border border-chocolate-100 relative overflow-hidden">
+                <!-- Discount Badge -->
+                <div class="absolute top-4 right-4 bg-red-600 text-white text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-widest">Últimas Vagas</div>
+                
+                <div class="text-center mb-8">
+                  <p class="text-zinc-400 line-through text-xl mb-1">De R$ 49,99</p>
+                  <p class="text-red-600 font-black text-2xl mb-4 italic">POR APENAS:</p>
+                  <div class="relative inline-block">
+                    <p class="text-7xl font-black font-baloo text-chocolate-900 leading-none">R$ 9,99</p>
+                    <p class="text-xs font-bold text-zinc-500 mt-2 uppercase tracking-widest">Pagamento Único via PIX</p>
+                  </div>
+                </div>
+
+                <a 
+                  href="https://pay.lowify.com.br/go.php?offer=4g3sw2u" 
+                  data-redirect
+                  class="w-full bg-green-600 hover:bg-green-500 text-white font-black py-6 rounded-2xl text-2xl text-center transition-all transform hover:scale-110 shadow-[0_20px_40px_rgba(22,163,74,0.3)] animate-pulse-fast uppercase tracking-tighter"
+                >
+                  QUERO O PREMIUM!
+                </a>
+                <div class="flex items-center justify-center gap-2 mt-6">
+                  <i data-lucide="zap" class="w-4 h-4 text-green-600"></i>
+                  <p class="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Liberação Instantânea no PIX</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Basic Plan -->
+          <div class="lg:col-span-4 bg-white/5 backdrop-blur-md border border-white/10 rounded-[2.5rem] p-10 flex flex-col opacity-60 hover:opacity-100 transition-opacity">
+            <div class="mb-8">
+              <h3 class="text-2xl font-black font-baloo mb-2">Plano Starter</h3>
+              <p class="text-chocolate-300 text-sm">Apenas o básico para começar.</p>
+            </div>
+            
+            <ul class="space-y-4 mb-12 flex-grow">
+              <li class="flex items-center gap-3 text-sm text-chocolate-100">
+                <i data-lucide="check-circle-2" class="w-5 h-5 text-amber-500"></i>
+                E-book: 50 Receitas Sem Fogo
+              </li>
+              <li class="flex items-center gap-3 text-sm text-chocolate-100">
+                <i data-lucide="check-circle-2" class="w-5 h-5 text-amber-500"></i>
+                Guia de Ingredientes
+              </li>
+              <li class="flex items-center gap-3 text-sm text-zinc-500 line-through">
+                Bônus: Geladinhos Gourmet
+              </li>
+              <li class="flex items-center gap-3 text-sm text-zinc-500 line-through">
+                Bônus: Doces Fit
+              </li>
+              <li class="flex items-center gap-3 text-sm text-zinc-500 line-through">
+                Acesso Vitalício
+              </li>
+            </ul>
+
+            <div class="mt-auto">
+              <div class="mb-6">
+                <p class="text-chocolate-400 text-xs uppercase font-bold tracking-widest mb-1">Investimento</p>
+                <p class="text-4xl font-black font-baloo">R$ 2,99</p>
+              </div>
+              <button 
+                type="button"
+                @click.stop.prevent="showUpsell = true"
+                class="w-full bg-white/10 hover:bg-white/20 text-white font-bold py-4 rounded-2xl transition-all border border-white/20 uppercase tracking-widest text-xs"
+              >
+                Escolher Este
+              </button>
+            </div>
+          </div>
+
+        </div>
       </div>
     </section>
 
     <!-- Guarantee Section -->
-    <section class="py-24 bg-zinc-900 text-white px-4">
-      <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-12">
-        <div class="w-48 h-48 md:w-64 md:h-64 shrink-0">
+    <section class="py-16 bg-chocolate-50 px-4">
+      <div class="max-w-4xl mx-auto text-center">
+        <div class="mb-6 inline-block">
           <img 
             src="https://cmrdigital.com.br/wp-content/uploads/2024/12/SELO-7-DIAS-ALPHA-1.png.webp" 
-            alt="Garantia de 7 Dias" 
-            class="w-full h-full object-contain"
+            alt="Garantia" 
+            class="w-24 h-24 mx-auto drop-shadow-xl"
             referrerPolicy="no-referrer"
           />
         </div>
-        <div class="text-center md:text-left">
-          <h2 class="text-3xl md:text-4xl font-black font-baloo mb-6 text-amber-400">RISCO ZERO PARA VOCÊ!</h2>
-          <p class="text-lg md:text-xl text-zinc-300 leading-relaxed">
-            Nós confiamos tanto em nossos estudos e pesquisas que lhe garantimos <span class="text-white font-bold">7 dias de garantia incondicional!</span> Se por qualquer motivo você não gostar do conteúdo, basta nos enviar um e-mail e devolveremos 100% do seu dinheiro.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- FAQ Section -->
-    <section class="py-24 bg-white px-4">
-      <div class="max-w-3xl mx-auto">
-        <h2 class="text-4xl font-black font-baloo text-center mb-16 text-zinc-900">DÚVIDAS FREQUENTES</h2>
-        <div class="space-y-2">
-          <template x-for="(faq, index) in faqs" :key="index">
-            <div class="border-b border-zinc-200 last:border-0" x-data="{ open: false }">
-              <button 
-                @click="open = !open"
-                class="w-full py-4 flex justify-between items-center text-left hover:text-green-600 transition-colors"
-              >
-                <span class="font-semibold text-lg" x-text="faq.question"></span>
-                <i :data-lucide="open ? 'chevron-up' : 'chevron-down'" class="w-5 h-5"></i>
-              </button>
-              <div 
-                x-show="open" 
-                x-collapse
-                class="overflow-hidden"
-              >
-                <p class="pb-4 text-zinc-600 leading-relaxed" x-text="faq.answer"></p>
-              </div>
-            </div>
-          </template>
-        </div>
-
-        </div>
+        <h2 class="text-2xl md:text-4xl font-black font-baloo text-chocolate-800 mb-4 uppercase italic">Risco Zero: Garantia de 7 Dias</h2>
+        <p class="text-base text-zinc-600 leading-relaxed max-w-xl mx-auto">
+          Teste o método. Se não gostar, devolvemos seu PIX na hora. Sem perguntas.
+        </p>
       </div>
     </section>
 
     <!-- Footer -->
-    <footer class="bg-zinc-100 py-12 px-4 border-t border-zinc-200">
+    <footer class="bg-chocolate-900 text-chocolate-300 py-12 px-4 border-t border-white/5">
       <div class="max-w-6xl mx-auto text-center">
-        <p class="text-zinc-500 text-sm mb-4">
-          &copy; 2026 Brigadeiros Sem Fogo Premium. Todos os direitos reservados.
-        </p>
-        <div class="flex justify-center gap-6 text-zinc-400 text-xs uppercase tracking-widest">
-          <a href="#" class="hover:text-zinc-600">Termos de Uso</a>
-          <a href="#" class="hover:text-zinc-600">Privacidade</a>
-          <a href="#" class="hover:text-zinc-600">Contato</a>
+        <div class="flex justify-center gap-8 mb-8 opacity-50">
+          <i data-lucide="zap" class="w-8 h-8"></i>
+          <i data-lucide="lock" class="w-8 h-8"></i>
+          <i data-lucide="shield" class="w-8 h-8"></i>
         </div>
-        <div class="mt-8 flex justify-center items-center gap-2 text-zinc-400">
-          <i data-lucide="alert-circle" class="w-4 h-4"></i>
-          <p class="text-[10px] max-w-md">
-            Este site não faz parte do Google ou do Facebook. Além disso, este site NÃO é endossado pelo Google ou pelo Facebook de nenhuma maneira.
-          </p>
+        <p class="text-xs mb-4">
+          &copy; 2026 Mestre dos Brigadeiros. Pagamentos via PIX.
+        </p>
+        <div class="flex justify-center gap-6 text-[9px] uppercase tracking-[0.2em] font-bold">
+          <a href="#" class="hover:text-white transition-colors">Termos</a>
+          <a href="#" class="hover:text-white transition-colors">Privacidade</a>
         </div>
       </div>
     </footer>
 
-    <!-- Upsell Modal -->
+    <!-- Upsell Modal (Aggressive Redesign) -->
     <div 
       x-show="showUpsell" 
-      class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md"
+      class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-chocolate-900/98 backdrop-blur-2xl"
       x-transition:enter="transition ease-out duration-300"
       x-transition:enter-start="opacity-0"
       x-transition:enter-end="opacity-100"
@@ -273,44 +345,38 @@
     >
       <div 
         @click.away="showUpsell = false"
-        class="bg-white rounded-2xl max-w-sm w-full overflow-hidden shadow-[0_0_50px_rgba(220,38,38,0.3)] border-2 border-red-600 transform transition-all"
+        class="bg-white rounded-[3rem] max-w-sm w-full overflow-hidden shadow-[0_0_150px_rgba(220,38,38,0.6)] border-8 border-red-600 transform transition-all relative"
         x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 scale-90 translate-y-8"
+        x-transition:enter-start="opacity-0 scale-90 translate-y-12"
         x-transition:enter-end="opacity-100 scale-100 translate-y-0"
       >
-        <div class="bg-red-600 py-2 px-4 text-center">
-          <p class="text-white font-black text-sm uppercase tracking-tighter italic animate-pulse">OFERTA ÚNICA E EXCLUSIVA!</p>
-        </div>
-        
-        <div class="p-5 text-center">
-          <h4 class="text-xl font-black text-zinc-900 mb-1">UPGRADE PREMIUM LIBERADO!</h4>
-          <p class="text-xs text-zinc-500 mb-4 leading-tight">
-            Leve <span class="font-bold text-red-600">TODOS OS BÔNUS</span> + Acesso Vitalício por quase o mesmo preço do básico!
-          </p>
-
-          <div class="bg-red-50 rounded-xl p-4 mb-5 border border-red-200">
-            <p class="text-zinc-400 line-through text-[10px] mb-0">De R$ 49,99</p>
-            <div class="flex items-center justify-center gap-2">
-              <span class="text-zinc-600 text-xs font-bold">POR APENAS:</span>
-              <span class="text-4xl font-black text-red-600 font-baloo">R$ 5,99</span>
-            </div>
-            <p class="text-[9px] text-red-500 font-bold uppercase mt-1">Válido apenas para este clique!</p>
+        <div class="p-8 text-center">
+          <div class="mb-6">
+            <h4 class="text-2xl font-black text-red-600 mb-2 uppercase italic">ESPERA! NÃO FAÇA ISSO!</h4>
+            <p class="text-xs text-zinc-600 font-bold">
+              Por apenas <span class="underline">R$ 3,00 a mais</span> você leva o <span class="text-red-600">PREMIUM</span> com todos os bônus e acesso vitalício.
+            </p>
           </div>
 
-          <div class="space-y-3">
+          <div class="bg-zinc-900 text-white rounded-2xl p-6 mb-6 border-2 border-amber-500">
+            <p class="text-amber-400 text-[10px] font-black uppercase mb-1">OFERTA ÚNICA PIX:</p>
+            <p class="text-5xl font-black font-baloo">R$ 5,99</p>
+          </div>
+
+          <div class="space-y-4">
             <a 
               href="https://pay.lowify.com.br/go.php?offer=0cu2fws" 
               data-redirect
-              class="block w-full bg-green-600 hover:bg-green-500 text-white font-black py-4 rounded-xl text-lg transition-all transform hover:scale-105 shadow-lg shadow-green-900/40 uppercase leading-none"
+              class="block w-full bg-green-600 hover:bg-green-500 text-white font-black py-5 rounded-xl text-xl transition-all transform hover:scale-105 shadow-xl uppercase animate-pulse"
             >
-              SIM! QUERO O PREMIUM
+              QUERO O PREMIUM (PIX)
             </a>
             
             <button 
-              @click="window.location.href = 'https://pay.lowify.com.br/checkout?product_id=I7k7FR' + (window.location.search || '')"
-              class="text-zinc-400 text-[10px] font-bold hover:text-zinc-600 transition-colors uppercase tracking-widest"
+              @click="const baseUrl = 'https://pay.lowify.com.br/checkout?product_id=I7k7FR'; const search = window.location.search; const separator = baseUrl.includes('?') ? '&' : '?'; window.location.href = search ? `${baseUrl}${separator}${search.substring(1)}` : baseUrl;"
+              class="text-zinc-400 text-[10px] font-bold hover:text-red-600 transition-colors uppercase underline"
             >
-              Não, quero continuar com o básico
+              Não, quero o plano limitado
             </button>
           </div>
         </div>
@@ -337,31 +403,24 @@
           },
           notification: {
             visible: false,
-            currentName: '',
+            message: '',
             names: ['Joice', 'Joana', 'Antonia', 'Francisca', 'Carla', 'Paula', 'Petra', 'Luana', 'Luiza', 'Marcia', 'Lis', 'Gabriela', 'Rafaela', 'Daniela', 'Marcela', 'Bruna', 'Eduarda', 'Felipa', 'Manoela', 'Marta', 'Andreia', 'Fernanda', 'Fabricia', 'Adriana', 'Luciana', 'Julia', 'Renata', 'Maria', 'Flavia', 'Mari', 'Dani'],
             show() {
-              this.currentName = this.names[Math.floor(Math.random() * this.names.length)];
+              const name = this.names[Math.floor(Math.random() * this.names.length)];
+              this.message = `${name} acabou de comprar via PIX!`;
               this.visible = true;
-              setTimeout(() => this.visible = false, 4000);
-              setTimeout(() => this.show(), Math.floor(Math.random() * (15000 - 8000) + 8000));
+              setTimeout(() => this.visible = false, 3000);
+              setTimeout(() => this.show(), Math.floor(Math.random() * (20000 - 10000) + 10000));
             }
           },
           premiumFeatures: [
-            "E-book completo: 50 receitas de brigadeiros sem fogo",
-            "Curso completo de geladinhos gourmet",
-            "70 Receitas de brigadeiros gourmet tradicional",
-            "60 Receitas de geladinho gourmet",
-            "50 Receitas de doces fit",
-            "40 Receitas de bolos caseiros",
-            "Atualizações gratuitas",
-            "7 dias de garantia",
-            "Acesso imediato!"
-          ],
-          faqs: [
-            { question: "Como irei receber meu acesso?", answer: "Assim que você realizar a compra, você receberá no seu e-mail o link de acesso. Basta criar a sua senha e entrar na plataforma. O acesso é imediato após a confirmação do pagamento." },
-            { question: "Por quanto tempo terei acesso?", answer: "Tanto no Plano Básico quanto no Premium, o seu acesso é vitalício. Você paga uma única vez e pode consultar as receitas e bônus para sempre, inclusive as futuras atualizações no caso do Premium." },
-            { question: "O pagamento é seguro?", answer: "Sim, é 100% seguro. Utilizamos plataformas de pagamento líderes de mercado (Kiwify e CartPanda) que possuem criptografia de ponta para garantir a segurança dos seus dados." },
-            { question: "Preciso de equipamentos caros?", answer: "Não! O grande diferencial do nosso método é que os brigadeiros são feitos sem fogo, utilizando técnicas simples e ingredientes que você encontra em qualquer supermercado." }
+            "50 Receitas Sem Fogo",
+            "Curso Geladinhos Gourmet",
+            "70 Brigadeiros Gourmet",
+            "50 Receitas Doces Fit",
+            "40 Bolos Caseiros",
+            "Suporte VIP WhatsApp",
+            "Acesso Vitalício"
           ],
           init() {
             this.timer.start();
@@ -374,18 +433,26 @@
             this.$watch('notification.visible', () => {
               this.$nextTick(() => lucide.createIcons());
             });
+            this.$watch('showUpsell', () => {
+              this.$nextTick(() => lucide.createIcons());
+            });
 
             // Robust Redirect Logic
             const search = window.location.search;
-            if (search) {
-              const links = document.querySelectorAll('a[data-redirect]');
-              links.forEach(link => {
-                const baseUrl = link.getAttribute('href');
+            document.addEventListener('click', (e) => {
+              const target = e.target.closest('[data-redirect]');
+              if (target) {
+                e.preventDefault();
+                const baseUrl = target.getAttribute('href');
+                if (!baseUrl) return;
+                
                 const separator = baseUrl.includes('?') ? '&' : '?';
                 const cleanSearch = search.startsWith('?') ? search.substring(1) : search;
-                link.setAttribute('href', `${baseUrl}${separator}${cleanSearch}`);
-              });
-            }
+                const finalUrl = search ? `${baseUrl}${separator}${cleanSearch}` : baseUrl;
+                
+                window.location.href = finalUrl;
+              }
+            });
           }
         }
       }
